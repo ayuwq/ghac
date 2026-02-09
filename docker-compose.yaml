@@ -1,0 +1,32 @@
+services:
+  app:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/${GITHUB_REPOSITORY_NAME}:latest
+    container_name: app-backend
+    restart: always
+    ports:
+      - '3000:3000'
+    env_file: .env
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:14-alpine
+    container_name: app-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  pg-data:
